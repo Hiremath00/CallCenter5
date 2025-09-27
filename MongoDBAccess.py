@@ -1,4 +1,5 @@
 import pymongo
+import streamlit as st
 import gridfs
 import os
 import pandas as pd
@@ -18,17 +19,20 @@ class MongoDBAccess:
             self.DB = None # Private attribute for database
             self.coll = None  # Private attribute for collection
 
-    def connect(self, uri, db_name, coll_name):
+    def connect(self, db_name, coll_name):
         """Connect to MongoDB and set the database and collection."""
-        self.client = pymongo.MongoClient(uri)
+        # get the MongoDB URI from Streamlit secrets
+        #mongo_uri = "mongodb://localhost:27017/"
+        mongo_uri =  st.secrets["MONGO_URI"] + "?retryWrites=true&w=majority&appName=Cluster0"
+        #print(mongo_uri)
+        self.client = pymongo.MongoClient(mongo_uri)
         self.DB = self.client[db_name]
         self.coll = self.DB[coll_name]
 
     def insert_document(self, audDoc : AudioFile):
         """Insert a document into the collection."""
         if self.coll is None:
-            #self.connect("mongodb://localhost:27017/", "recordings", "callcenter")
-            self.connect("mongodb+srv://callcenter_db_user:mongopass@cluster0.h3ufcah.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0","recordings", "callcenter")
+            self.connect("recordings", "callcenter")
             if self.coll is None:
                 raise Exception("Database not connected. Call connect() first.")
         fs = gridfs.GridFS(self.DB)
@@ -52,7 +56,7 @@ class MongoDBAccess:
         """Insert a document into the collection."""
         try:
             if self.coll is None:
-                self.connect("mongodb://localhost:27017/", "recordings", "callcenter")
+                self.connect("recordings", "callcenter")
             if self.client is None:
                 return pd.DataFrame() # Return empty if connection fails
             
