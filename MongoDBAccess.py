@@ -39,6 +39,7 @@ class MongoDBAccess:
 
         temp_dir = "temp_uploads"
         os.makedirs(temp_dir, exist_ok=True)   
+        
         # Construct the path for the saved file
         file_path = os.path.join(temp_dir, audDoc.file.name)
 
