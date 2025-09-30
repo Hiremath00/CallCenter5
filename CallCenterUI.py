@@ -4,6 +4,7 @@ import pandas
 from st_aggrid.shared import JsCode
 from dotenv import load_dotenv
 from MongoDBAccess import MongoDBAccess
+from Evaluate import evaluate_summarization
 from AudioFile import AudioFile
 from WhisperProc import transcribe_audio
 from LLM_interface import summarize_text, sentiment_analyze
@@ -144,6 +145,13 @@ if st.session_state.show_grid:
 if st.sidebar.button ("Get History"):
     #st.session_state.show_grid = True
     show_Recordings()
+
+if st.sidebar.button ("Evaluate Summary"):
+    st.empty()
+    st.write('Evaluating  SUmmary')
+    evaluate_summarization(audFile.text, audFile.summary)
+    st.write('Evaluating complete!')
+
 
 if(st.session_state.file ):
     audFile.file = st.session_state.file
